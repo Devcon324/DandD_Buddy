@@ -4,6 +4,7 @@ from discord.ext import commands
 import random
 import requests
 import json
+import operator
 
 
 logger = logging.getLogger('discord')
@@ -12,7 +13,14 @@ handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w'
 handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
 logger.addHandler(handler)
 
-
+ops = {
+    '+' : operator.add,
+    '-' : operator.sub,
+    '*' : operator.mul,
+    '/' : operator.truediv,
+    '%' : operator.mod,
+    '^' : operator.xor,
+}
 
 client = discord.Client()
 
@@ -44,10 +52,8 @@ async def on_ready():
 async def on_message(message):
     if message.author == client.user:
         return
-
     # convert input to lwoercase for case-insensitivity
     input = str.lower(message.content)
-
     # this code block will reply with a quote
     if input.startswith('!hello'):
         quote = get_quote()
@@ -56,12 +62,26 @@ async def on_message(message):
     if any(word in input for word in sad_words):
         await message.channel.send(random.choice(starter))
 
+
+
+
+    # raw[1] = 1d20
+    # raw[2] = + or -
+    # raw[3] = modifier
     if input.startswith('!roll'):
-        dice = input.strip('!roll ').split('d')
+        raw = input.strip('!roll').split(' ')
+        await message.channel.send(raw)
+        dice = raw[1].split('d')
+        await message.channel.send(dice)
+        modifier = raw[3]
         result = []
+
         for roll in range(int(dice[0])):
             roll = random.randint(1,int(dice[1]))
-            result.append(roll)
+            roll_mod = ops[raw[2]](roll, int(modifier)) 
+            result.append(roll_mod)
+            await message.channel.send(roll)
+            await message.channel.send(roll_mod)
 
         x = len(str(result))
         if x > 2000:
