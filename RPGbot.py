@@ -12,6 +12,8 @@ client = discord.Client()
 async def on_ready():
     print('We have logged in as {0.user}'.format(client))
 
+# Since the on_message() event triggers for every message received, we have to make sure that we ignore messages from ourselves. 
+# We do this by checking if the Message.author is the same as the Client.user.
 @client.event
 async def on_message(message):
     if message.author == client.user:
