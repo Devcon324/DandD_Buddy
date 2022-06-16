@@ -21,3 +21,5 @@ async def on_message(message):
         await message.channel.send('Hello!')
 
 client.run('OTg2ODMzOTU1NTMxNjUzMTUw.Gma0XO.7cVBa6U6VhKMgwp-Zssm3EjYk9x96GSxZrMSNg')
+
+test
