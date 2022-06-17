@@ -6,7 +6,6 @@ import requests
 import json
 import operator
 
-
 logger = logging.getLogger('discord')
 logger.setLevel(logging.DEBUG)
 handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
@@ -29,18 +28,15 @@ sad_words = [
     "depressed", 
     "unhappy"
     ]
-
 starter = [
     "Cheer up!",
     "Hang in there!"
 ]
-
 def get_quote():
     response = requests.get("https://zenquotes.io/api/random")
     json_data = json.loads(response.text)
     quote = json_data[0]['q'] + " -" + json_data[0]['a']
     return(quote)
-
 
 @client.event
 async def on_ready():
@@ -62,47 +58,53 @@ async def on_message(message):
     if any(word in input for word in sad_words):
         await message.channel.send(random.choice(starter))
 
-
-
-
-    # raw[1] = 1d20
-    # raw[2] = + or -
-    # raw[3] = modifier
+# raw[1] = 1d20
+# raw[2] = + or -
+# raw[3] = modifier
+# dice[0] = # of dice
+# dice[1] = # of dice sides
     if input.startswith('!roll'):
-        raw = input.strip('!roll').split(' ')
-        await message.channel.send(raw)
-        dice = raw[1].split('d')
-        await message.channel.send(dice)
-        modifier = raw[3]
+        name = str(message.author).rstrip("#123456789")
         result = []
-
+        total = 0
+        raw = input.strip('!addroll').split(' ')
+        dice = raw[1].split('d')
+        
         for roll in range(int(dice[0])):
             roll = random.randint(1,int(dice[1]))
-            roll_mod = ops[raw[2]](roll, int(modifier)) 
-            result.append(roll_mod)
-            await message.channel.send(roll)
-            await message.channel.send(roll_mod)
-
+            result.append(roll)
+            total += roll        
+        
+        # list of the die rolls
+        display_raw_roll = ["{}".format(result)]
+        
+        # apply modifier once if present
+        if len(raw) == 4:
+            modifier = raw[3]
+            total = ops[raw[2]](total, int(modifier))
+            str_modifier = "{}{}".format(raw[2], raw[3])
+            display_raw_roll = ["{} {}".format(result, str_modifier)]
+        
+        # checks if result is longer than 2000char message & prints the final total
         x = len(str(result))
         if x > 2000:
             await message.channel.send("Too many dice to handle!")
             return
+        else:
+            # shows user all dice rolls and modifier at end
+            await message.channel.send(name + " Rolled: " + "{}".join(display_raw_roll) + "\n" + "Total: {}".format(total), tts=True)
+            
+            #await message.channel.send(name +" Total: {}".format(total), tts=True)
 
-        await message.channel.send(result)
-        if int(dice[1]) == 20:
+    if int(dice[1]) == 20:
             natty_count = 0
             for number in result:
                 if number == 20:
                     natty_count +=1
             if natty_count >= 2:
-                await message.channel.send("🎉 That's {} Natural 20's! 🎉".format(natty_count))
+                await message.channel.send("🎉 That's {} Natural 20's!".format(natty_count), tts=True)
             elif natty_count == 1:
-                await message.channel.send("🎉 That's a Natural 20! 🎉")
-
-    
-
-
-
+                await message.channel.send("🎉 That's a Natural 20!", tts=True)
 
 
 
