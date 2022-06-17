@@ -23,6 +23,7 @@ ops = {
 
 client = discord.Client()
 
+# This is to learn API Linking for D&D API linkage for Rule calls
 sad_words = [
     "sad", 
     "depressed", 
@@ -42,8 +43,6 @@ def get_quote():
 async def on_ready():
     print('We have logged in as {0.user}'.format(client))
 
-# Since the on_message() event triggers for every message received, we have to make sure that we ignore messages from ourselves. 
-# We do this by checking if the Message.author is the same as the Client.user.
 @client.event
 async def on_message(message):
     if message.author == client.user:
@@ -93,8 +92,6 @@ async def on_message(message):
         else:
             # shows user all dice rolls and modifier at end
             await message.channel.send(name + " Rolled: " + "{}".join(display_raw_roll) + "\n" + "Total: {}".format(total), tts=True)
-            
-            #await message.channel.send(name +" Total: {}".format(total), tts=True)
 
     if int(dice[1]) == 20:
             natty_count = 0
