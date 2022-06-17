@@ -81,7 +81,7 @@ async def on_message(message):
         if len(raw) == 4:
             modifier = raw[3]
             total = ops[raw[2]](total, int(modifier))
-            str_modifier = "{}{}".format(raw[2], raw[3])
+            str_modifier = "{} {}".format(raw[2], raw[3])
             display_raw_roll = ["{} {}".format(result, str_modifier)]
         
         # checks if result is longer than 2000char message & prints the final total
@@ -91,7 +91,8 @@ async def on_message(message):
             return
         else:
             # shows user all dice rolls and modifier at end
-            await message.channel.send(name + " Rolled: " + "{}".join(display_raw_roll) + "\n" + "Total: {}".format(total), tts=True)
+            await message.channel.send(name + " Rolled: " + " {}".join(display_raw_roll))
+            await message.channel.send(name + " Total: {}".format(total), tts=True)
 
     if int(dice[1]) == 20:
             natty_count = 0
@@ -99,9 +100,9 @@ async def on_message(message):
                 if number == 20:
                     natty_count +=1
             if natty_count >= 2:
-                await message.channel.send("🎉 That's {} Natural 20's!".format(natty_count), tts=True)
+                await message.channel.send("🎉 " + name + " Got {} Natural 20's!".format(natty_count), tts=True)
             elif natty_count == 1:
-                await message.channel.send("🎉 That's a Natural 20!", tts=True)
+                await message.channel.send("🎉 " + name + " Got a Natural 20!", tts=True)
 
 
 
