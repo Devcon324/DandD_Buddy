@@ -6,7 +6,6 @@ import operator
 from titlecard import titlecard
 from apikeys import *
 import logging
-import requests
 import json
 import os
 import asyncio
