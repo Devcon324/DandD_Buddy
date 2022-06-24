@@ -5,6 +5,7 @@ import random
 import operator
 from titlecard import titlecard
 from apikeys import *
+import logging
 import requests
 import json
 import os
@@ -12,7 +13,12 @@ import asyncio
 import youtube_dl
 import time
 
-#setup
+# setup
+logger = logging.getLogger('discord')
+logger.setLevel(logging.DEBUG)
+handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
+handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+logger.addHandler(handler)
 ops = {
     '+' : operator.add,
     '-' : operator.sub,
@@ -28,9 +34,10 @@ intents.members = True
 client = discord.Client()
 bot = commands.Bot(command_prefix='!', case_insensitive=True, intents=intents)
 
+# terminal message and title card when conencted
 @bot.event
 async def on_ready():
-    titlecard(bot)
+    titlecard(bot)  
 
 # greets the user
 @bot.command()
@@ -56,10 +63,11 @@ async def on_member_remove(member):
     channel = client.get_channel(986834387968598049)
     await channel.send(f"Goodbye {str(member.name).split('#')[0]}")
 
-# takes !roll argument, case insensitive
-# Examples: "!roll 1d20", "!roll 1d20 + 5"
+# user can roll dice with/without modifiers
 @bot.command(pass_context = True)
 async def roll(ctx, *args):
+    # takes !roll argument, case insensitive
+    # Examples: "!roll 1d20", "!roll 1d20 + 5"
     dice = str.lower(args[0])
     name = str(ctx.author).split("#")[0]
     num_of_dice = int(dice.split('d')[0])
@@ -104,7 +112,7 @@ async def roll(ctx, *args):
         elif natty_count == 1:
             await ctx.channel.send("**🎉 " + name + " Got a Natural 20!**", tts=True)
 
-# bot joins user's channel && Plays an audio file
+# bot joins user's channel && Plays notification audio
 @bot.command(pass_context = True)
 async def join(ctx):
     if (ctx.author.voice):
@@ -123,9 +131,6 @@ async def leave(ctx):
         await ctx.send('I left the voice channel')
     else:
         await ctx.send("I am not in a voice channel")
-
-
-
 
 
 
@@ -152,28 +157,52 @@ async def stop(ctx):
     voice = discord.utils.get(bot.voice_clients, guild = ctx.guild)
     voice.stop()
 
+@bot.command(pass_context = True)
+async def chill(ctx):
+    # will join user channel and play chill.mp3
+    # will play chill.mp3 if already in channel
+    voice = discord.utils.get(bot.voice_clients, guild = ctx.guild)
+    if (voice == None and ctx.author.voice):
+        channel = ctx.message.author.voice.channel
+        voice = await channel.connect()
+        source = FFmpegPCMAudio('Audio\chill.mp3')
+    elif (voice != None and ctx.author.voice):
+        source = FFmpegPCMAudio('Audio\chill.mp3')
+    else:
+        await ctx.send('You are not connected to a voice channel for me to join!')
+    player = voice.play(source)
+
 # !play "Arg" will play a file in Audio folder using filename as arg
 # added fucntionality to pass filename, no extension neeeded
 # function loops through audio folder and plays relevant audio
+"""
+    # discord.utils.get returns None if it doesn't find anything. 
+    # In this case, if voice is None, the bot isn't connected to any channel.
+    # However, if your bot is connected, voice will be a discord
+    # VoiceClient object, and the if statement will be executed.
+"""
 @bot.command(pass_context = True)
 async def play(ctx, arg):
-    voice = ctx.guild.voice_client
-    for file in os.listdir('Audio'):
-        if str.lower(arg) == str(file).split('.')[0]:
-            ext = str(file).split('.')[1]
-            source = FFmpegPCMAudio(f'Audio\{arg}.{ext}')
-    player = voice.play(source)
+    voice = discord.utils.get(bot.voice_clients, guild = ctx.guild)
 
-
-@bot.command(pass_context = True)
-async def chill(ctx):
-    if (ctx.author.voice):
+    if (voice == None and ctx.author.voice):
         channel = ctx.message.author.voice.channel
         voice = await channel.connect()
-        source = FFmpegPCMAudio('Audio\supermarket.mp3')
-        player = voice.play(source)
+        for file in os.listdir('Audio'):
+            if str.lower(arg) == str(file).split('.')[0]:
+                ext = str(file).split('.')[1]
+                source = FFmpegPCMAudio(f'Audio\{arg}.{ext}')
+    elif (voice != None and ctx.author.voice):
+        # declaring voice is not needed here
+        # voice = ctx.guild.voice_client
+        for file in os.listdir('Audio'):
+            if str.lower(arg) == str(file).split('.')[0]:
+                ext = str(file).split('.')[1]
+                source = FFmpegPCMAudio(f'Audio\{arg}.{ext}')
     else:
         await ctx.send('You are not connected to a voice channel for me to join!')
+
+    player = voice.play(source)
 
 
 
