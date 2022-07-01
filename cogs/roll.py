@@ -2,7 +2,6 @@ import discord
 from discord.ext import commands
 import random
 import operator
-
 ops = {
     '+' : operator.add,
     '-' : operator.sub,
@@ -12,13 +11,18 @@ ops = {
     '^' : operator.xor,
 }
 
-
-class RollerCog(commands.Cog):
+# user can roll dice with/without modifiers
+"""
+    Add a boolean variable that saves True or false to a global variable of TTS
+    This allows for users to toggle TTS On/Off for the bot
+"""
+class Roll(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
     
     @commands.command()
     async def roll(self, ctx, *args):
+        print("Dice Being Rolled")
         # takes !roll argument, case insensitive
         # Examples: "!roll 1d20", "!roll 1d20 + 5"
         dice = str.lower(args[0])
@@ -34,6 +38,9 @@ class RollerCog(commands.Cog):
             result.append(roll)
             total += roll   
         
+        # sort the result list from low to high
+        result.sort()
+
         # string of the die rolls
         display_raw_roll = ["{}".format(result)]
         
@@ -53,7 +60,7 @@ class RollerCog(commands.Cog):
             # shows user all dice rolls and modifier at end
             await ctx.channel.send(name + " Rolled: " + " {}".join(display_raw_roll))
             await ctx.channel.send(name + " Rolled a Total of **{}**".format(total), tts=True)
-
+        
         # if user rolls a d20, records how many natural 20's were rolled
         if num_of_sides == 20:
             natty_count = 0
@@ -61,9 +68,9 @@ class RollerCog(commands.Cog):
                 if number == 20:
                     natty_count +=1
             if natty_count >= 2:
-                await ctx.channel.send("**🎉 " + name + " Got {} Natural 20's!**".format(natty_count), tts=True)
+                await ctx.channel.send(f"**🎉 " + name + " Got {natty_count} Natural 20's!**", tts=True)
             elif natty_count == 1:
                 await ctx.channel.send("**🎉 " + name + " Got a Natural 20!**", tts=True)
 
-def setup(bot: commands.Bot):
-    bot.add_cog()
+def setup(bot):
+    bot.add_cog(Roll(bot))

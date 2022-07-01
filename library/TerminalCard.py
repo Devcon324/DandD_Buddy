@@ -1,4 +1,4 @@
-def titlecard(bot):
+def title(bot):
     print("******************************************************")
     print("We have logged in as {0.user}".format(bot))
     print("  _____         _____    ____   ____ _______ ")
