@@ -341,8 +341,8 @@ async def on_command_error(ctx, error):
         embed.description = "Something went horribly wrong. Notify the Bot's Developer (https://github.com/Devcon324)"
         await ctx.send(embed=embed)
 
-
-
+ 
+  
 
 
 
