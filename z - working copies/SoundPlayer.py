@@ -7,14 +7,11 @@ import os
 # Dictionary for queueing songs"""
 queues = {}
 def check_queue(ctx, id):
-    # if the server ID in the Dict has SONGS
-    voice = ctx.guild.voice_client
-    while queues[id] != []:
-        # some reason this redundant check makes audio run with less stops
-        if queues[id] != []:
-            if not voice.is_playing():
-                source = queues[id].pop(0)
-                voice.play(source)
+    """This works perfectly, autoplays the queue until queue is empty"""
+    if len(queues[id]) > 0:
+        voice = ctx.guild.voice_client
+        source = queues[id].pop(0)
+        voice.play(source, after=lambda e: check_queue(ctx, id))
 
 # code that i was experimenting with to autoplay and skip songs
 def skip_song(ctx, id):
@@ -64,7 +61,7 @@ class MusicBot(commands.Cog):
         else:
             await ctx.send('You are not connected to a voice channel for me to join!')
         
-        voice.play(source, after = lambda x = None: check_queue(ctx, guild_id))
+        voice.play(source, after = lambda e: check_queue(ctx, guild_id))
     
     
     """
