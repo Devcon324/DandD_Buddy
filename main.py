@@ -4,7 +4,7 @@ from discord.ext import commands
 import os
 from tools import TerminalCard, ActionLogger
 from dotenv import load_dotenv
-
+ 
 load_dotenv()
 
 ActionLogger.log()
