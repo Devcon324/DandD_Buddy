@@ -38,4 +38,4 @@ async def on_ready():
             bot.load_extension(extension)
             print(extension)
 
-bot.run(os.getenv("BOTTOKEN"))
+bot.run(os.getenv("BOT_TOKEN"))
