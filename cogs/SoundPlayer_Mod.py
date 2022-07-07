@@ -153,6 +153,7 @@ class MusicBot(commands.Cog):
 
         if guild_id in queues:
             skip_song(ctx, guild_id)
+            ctx.send("Audio Skipped")
         else:
             ctx.send("There are no Songs left in the Queue")
     
