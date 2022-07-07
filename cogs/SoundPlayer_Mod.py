@@ -208,9 +208,9 @@ class MusicBot(commands.Cog):
         if (voice == None and ctx.author.voice):
             channel = ctx.message.author.voice.channel
             voice = await channel.connect()
-            source = FFmpegPCMAudio('Audio\chill.mp3')
+            source = FFmpegPCMAudio('audio\chill.mp3')
         elif (voice != None and ctx.author.voice):
-            source = FFmpegPCMAudio('Audio\chill.mp3')
+            source = FFmpegPCMAudio('audio\chill.mp3')
         else:
             await ctx.send('You are not connected to a voice channel for me to join!')
         player = voice.play(source)
