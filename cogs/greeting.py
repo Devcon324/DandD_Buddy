@@ -8,6 +8,7 @@ class Greetings(commands.Cog):
         self.bot = bot
 
     # greets the user
+    """Bug - will greet even if soemone types abcHEYefg"""
     @commands.Cog.listener('on_message')
     async def greet(self, message):
         greetings = [
