@@ -1,9 +1,11 @@
 # setup
 import discord
 from discord.ext import commands
-from apikeys import *
 import os
-from library import ActionLogger, TerminalCard
+from tools import TerminalCard, ActionLogger
+from dotenv import load_dotenv
+
+load_dotenv()
 
 ActionLogger.log()
 
@@ -36,4 +38,4 @@ async def on_ready():
             bot.load_extension(extension)
             print(extension)
 
-bot.run(BOTTOKEN)
+bot.run(os.getenv("BOTTOKEN"))
