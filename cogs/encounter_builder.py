@@ -4,6 +4,14 @@ from discord.ext import commands
 import json
 import random
 import asyncio
+from numpy import imag
+import requests
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
 
 xp_thresholds = {
 # Level:   [Easy, Medium, Hard, Deadly],
@@ -79,6 +87,13 @@ class EncounterGenerator(commands.Cog):
             num_mons    = int(args[2])
             difficulty  = str(args[3])
 
+            print("----------------------------------------")
+            print("Players    = ", players)
+            print("Level      = ", level)
+            print("Num-Mons   = ", num_mons)
+            print("Difficulty = ", difficulty)
+            print("----------------------------------------")
+
             file = open('resources\monsters.json')
             monster_manual = json.load(file)
             diff = None
@@ -94,12 +109,12 @@ class EncounterGenerator(commands.Cog):
                 #this is the maximum XP needed for the requested difficulty
                 lower_max_xp = players * xp_thresholds[level][diff]
                 upper_max_xp = players * xp_thresholds[level][diff+1]
-                print("Maximum XP Budget Range = ", lower_max_xp, " to ", upper_max_xp)
+                print("Maximum XP Budget Range          = ", lower_max_xp, " to ", upper_max_xp)
 
                 # 
                 lower_adj_max_xp = lower_max_xp / adjusted_xp_mod[num_mons]
                 upper_adj_max_xp = upper_max_xp / adjusted_xp_mod[num_mons]
-                print("Adjusted Maximum XP Budget Range = ", lower_adj_max_xp, " to ", upper_adj_max_xp)
+                print("Maximum XP Budget Range Adjusted = ", lower_adj_max_xp, " to ", upper_adj_max_xp)
 
             
             mons_select = {}
@@ -128,7 +143,7 @@ class EncounterGenerator(commands.Cog):
                     mons_traits.append(i["Armor Class"])
                     mons_traits.append(str(i["Hit Points"]).split(" ").pop(0))
                     mons_traits.append(i["Speed"])
-                    #mons_traits.append(i["img_url"])
+                    mons_traits.append(i["img_url"])
                     
                     mon_name = i["name"]
                     mons_select[mon_name] = mons_traits
@@ -139,27 +154,21 @@ class EncounterGenerator(commands.Cog):
                     count += 1
 
 
-            """
-                    mons_select[monster["name"]].append(monster_traits)
-            """
-            for x, y in mons_select.items():
-                print(x, y) 
+            """for x, y in mons_select.items():
+                print(x, y) """
                     
 
             print("*********************************************************")
-            print("")
-            print("")
-            print("")
             
             while True:
                 sum_xp = 0
                 entry_list = list(mons_select.items())
                 random_entry = random.sample(entry_list, num_mons)
-                print("*********************************************************")
-                print(random_entry)
+                #print("*********************************************************")
+                #print(random_entry)
 
                 for monster in random_entry:
-                    print(f"the xp for {monster[0]} = {monster[1][0]}")
+                    #print(f"the xp for {monster[0]} = {monster[1][0]}")
                     sum_xp += int(monster[1][0])
 
                 #print(sum_xp)
@@ -167,53 +176,34 @@ class EncounterGenerator(commands.Cog):
                     break
 
             print("*********************************************************")
-            print("")
-            print("")
-            print("")
-            print("Final Random Mons = ", random_entry)
-            print("Sum               = ", sum_xp)
-            print("")
-            print("")
-            print("")
-            print("*********************************************************")
-            print("")
+            images = []
             for monster in random_entry:
                 print(f"{monster}")
-
-
+                print(f"the xp for {monster[0]} = {monster[1][0]}")
+                images.append(monster[1][4])
+            print(sum_xp)
+            
+            thumbnail_url = str(random.choice(images))
 
             embed = discord.Embed(
                 title = "Your Random Generated Encounter!", 
-                url = "https://www.dndbeyond.com/monsters/16988-quasit",
-                description = "Description",
+                description = "See below the info for each monster.\nClick links for more information and images",
                 color = 0x00FFFF
                 )
-
+            embed.set_image(
+                url=thumbnail_url
+            )
             for mon in random_entry:
                 embed.add_field(
                     name = f"{mon[0]}",
-                    value = f"XP = {mon[1][0]}\nAC = {mon[1][1]}\nHP = {mon[1][2]}\nSpeed = {mon[1][3]}\n",
+                    value = f"XP = {mon[1][0]}\nAC = {mon[1][1]}\nHP = {mon[1][2]}\nSpeed = {mon[1][3]}\nhttps://www.aidedd.org/dnd/monstres.php?vo={mon[0].replace(' ', '-')}",
                     inline = True
                     )
             embed.set_footer(
             text = "Encounter generated following dndbeyond's algorithm\nhttps://www.dndbeyond.com/sources/basic-rules/building-combat-encounters"
             )
             
-            
             await message.send(embed=embed)
-
-
-
-
-
-
-
-
-            monster_names = []
-            for monster in random_entry:
-                monster_names.append(monster[0])
-            print(monster_names)
-            await message.send(monster_names)
 
             file.close()
 
