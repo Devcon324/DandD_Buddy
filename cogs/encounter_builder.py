@@ -77,7 +77,7 @@ class EncounterGenerator(commands.Cog):
             return
         if len(args) == 0:
             embed = discord.Embed(
-                title="D&D Buddy Encounter Generator",
+                title="D&D Encounter Generator",
                 description="Type !encounter [a] [b] [c] [d] \n[a] = How Many Players?\n[b] = Player/party level\n[c] = How many monsters?\n[d] = Difficulty ('easy', 'medium', hard', 'deadly')\n"
             )
             await message.send(embed=embed)
@@ -144,6 +144,7 @@ class EncounterGenerator(commands.Cog):
                     mons_traits.append(str(i["Hit Points"]).split(" ").pop(0))
                     mons_traits.append(i["Speed"])
                     mons_traits.append(i["img_url"])
+                    mons_traits.append(i["Challenge"])
                     
                     mon_name = i["name"]
                     mons_select[mon_name] = mons_traits
@@ -181,13 +182,13 @@ class EncounterGenerator(commands.Cog):
                 print(f"{monster}")
                 print(f"the xp for {monster[0]} = {monster[1][0]}")
                 images.append(monster[1][4])
-            print(sum_xp)
+            print(f"summed xp = {sum_xp}")
             
             thumbnail_url = str(random.choice(images))
 
             embed = discord.Embed(
                 title = "Your Random Generated Encounter!", 
-                description = "See below the info for each monster.\nClick links for more information and images",
+                description = f"This is a **{difficulty} difficulty** encounter for **{players} players**, at **level {level}**.\nClick links for more information and images",
                 color = 0x00FFFF
                 )
             embed.set_image(
@@ -196,7 +197,7 @@ class EncounterGenerator(commands.Cog):
             for mon in random_entry:
                 embed.add_field(
                     name = f"{mon[0]}",
-                    value = f"XP = {mon[1][0]}\nAC = {mon[1][1]}\nHP = {mon[1][2]}\nSpeed = {mon[1][3]}\nhttps://www.aidedd.org/dnd/monstres.php?vo={mon[0].replace(' ', '-')}",
+                    value = f"CR = {mon[1][5]}\nAC = {mon[1][1]}\nHP = {mon[1][2]}\nSpeed = {mon[1][3]}\nhttps://www.aidedd.org/dnd/monstres.php?vo={mon[0].replace(' ', '-')}",
                     inline = True
                     )
             embed.set_footer(

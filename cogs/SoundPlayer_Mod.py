@@ -22,7 +22,7 @@ def autoplay_queue(ctx, id):
 def skip_song(ctx, id):
     if queues[id] != []:
         voice = ctx.guild.voice_client
-        voice.stop()
+        voice.pause()
         source = queues[id].pop(0)
         voice.play(source)
 
@@ -151,11 +151,13 @@ class MusicBot(commands.Cog):
         voice = discord.utils.get(self.bot.voice_clients, guild = ctx.guild)
         guild_id = ctx.message.guild.id
 
-        if guild_id in queues:
+        if (guild_id in queues) and (queues[guild_id] != []):
             skip_song(ctx, guild_id)
             await ctx.send("Audio Skipped")
+        elif (guild_id in queues) and (queues[guild_id] == []):
+            await ctx.send("There are no songs left in the queue")
         else:
-            await ctx.send("There are no Songs left in the Queue")
+            await ctx.send("You do not have any queued songs")
     
     @commands.command()
     async def list(self, ctx):
@@ -212,6 +214,32 @@ class MusicBot(commands.Cog):
             source = FFmpegPCMAudio('audio\chill.mp3')
         elif (voice != None and ctx.author.voice):
             source = FFmpegPCMAudio('audio\chill.mp3')
+        else:
+            await ctx.send('You are not connected to a voice channel for me to join!')
+        player = voice.play(source)
+
+    @commands.command()
+    async def khorn(self, ctx):
+        voice = discord.utils.get(self.bot.voice_clients, guild = ctx.guild)
+        if (voice == None and ctx.author.voice):
+            channel = ctx.message.author.voice.channel
+            voice = await channel.connect()
+            source = FFmpegPCMAudio('audio\khorn.mp3')
+        elif (voice != None and ctx.author.voice):
+            source = FFmpegPCMAudio('audio\khorn.mp3')
+        else:
+            await ctx.send('You are not connected to a voice channel for me to join!')
+        player = voice.play(source)
+
+    @commands.command()
+    async def heresy(self, ctx):
+        voice = discord.utils.get(self.bot.voice_clients, guild = ctx.guild)
+        if (voice == None and ctx.author.voice):
+            channel = ctx.message.author.voice.channel
+            voice = await channel.connect()
+            source = FFmpegPCMAudio('audio\heresy.mp3')
+        elif (voice != None and ctx.author.voice):
+            source = FFmpegPCMAudio('audio\heresy.mp3')
         else:
             await ctx.send('You are not connected to a voice channel for me to join!')
         player = voice.play(source)

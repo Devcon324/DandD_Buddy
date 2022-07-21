@@ -20,10 +20,16 @@ class Greetings(commands.Cog):
         'hello there']
         if message.author == self.bot.user:
             return
-        first_word = str(message.content).split(" ")[0]
-        if any(greetings in str.lower(first_word) for greetings in greetings):
+        first_word = str.lower(message.content).split(" ")[0]
+        
+        """this actually chekcs if a greeting is in any word i.e "abcdhi" = True has "hi" in it"""
+        #if any(greetings in str.lower(first_word) for greetings in greetings):
+        #    await message.channel.send(f"{str.capitalize(random.choice(greetings))} {str(message.author).split('#')[0]}")
+        #    print("Greeting Replied")
+
+        if first_word in greetings:
             await message.channel.send(f"{str.capitalize(random.choice(greetings))} {str(message.author).split('#')[0]}")
-            print("Greeting Replied") 
+            print("Greeting Replied")
 
     # greets new memebers
     @commands.Cog.listener()
