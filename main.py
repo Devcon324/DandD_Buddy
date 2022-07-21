@@ -12,7 +12,7 @@ ActionLogger.log()
 intents = discord.Intents.default()
 intents.members = True
 client = discord.Client()
-bot = commands.Bot(command_prefix='!', case_insensitive=True, intents=intents)
+bot = commands.Bot(command_prefix='!', help_command=None, case_insensitive=True, intents=intents)
 
 @bot.event
 async def on_ready():
