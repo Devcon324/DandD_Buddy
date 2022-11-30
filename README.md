@@ -1,5 +1,7 @@
 
 # **D&DBot**<br>
+## Due to Discord and Youtube Changes, this Bot is out of date. 
+## Use at your own risk.
 ## ***A Helping Hand in Playing D&D Over Discord***<br>
 ![GitHub all releases](https://img.shields.io/github/downloads/Devcon324/D_DBot/total?style=plastic)
 ![GitHub top language](https://img.shields.io/github/languages/top/Devcon324/D_DBot?color=yellow)
